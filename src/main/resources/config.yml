@@ -11,7 +11,7 @@ max-players: 12
 join-items:
   item1:
     material: "COMPASS"
-    name: "&a&lJouer &r&7(Appuyez)"
+    name: "&aJouer &7(Appuyez)"
     lore:
       - "&7Choisissez un mini-jeu en un clic."
     slot: 0
@@ -49,14 +49,3 @@ join-items:
     slot: 8
     left_click_command: "options"
     right_click_command: "options"
-bossBar:
-  message1:
-    text: "&bVous jouez sur &b&lCiaraCube.fr"
-    barColor: AQUA
-    fillAmount: 0.5
-    duration: 500
-  message2:
-    text: "&eObtenez un grade, des particules, et atouts &6&l/BOUTIQUE"
-    barColor: RED
-    fillAmount: 0.8
-    duration: 500

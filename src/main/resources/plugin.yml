@@ -1,32 +1,30 @@
 name: CiaraHub
-version: '${project.version}'
+version: 1.0
 main: com.ciarahub.CiaraHub
-api-version: '1.19'
+api-version: 1.19
+description: Plugin pour gérer diverses fonctionnalités de hub sur un serveur Minecraft.
+
 commands:
-  config:
-  heal:
-    description: Restaure la vie du joueur.
-    usage: /heal
-  hello:
-    description:
-      usage:
-  console:
-  help:
-    description: Obtenir de l'aide en jeu.
-    usage: /help
   spawn:
     description: Retourne le joueur au point de spawn.
     usage: /spawn
-  pls:
-  t:
-  pluginlist:
-  profile:
-  clara:
-  gameselection:
-  gui:
-  helptest:
-  image:
-    description: Envoie une image dans le tchat
-    usage: /image <URL de l'image>
-    permission: votreplugin.image
 
+  t:
+    description: Commande pour gérer le temps.
+    usage: /t <day|night>
+
+  getrank:
+    description: Affiche le rang du joueur
+    usage: /<command>
+
+
+permissions:
+  ciarahub.spawn:
+    description: Permet au joueur d'utiliser la commande /spawn.
+    default: op
+  ciarahub.time:
+    description: Permet au joueur de changer le temps avec /t.
+    default: op
+  ciarahub.getrank:
+    description: Permet au joueur de voir son rang avec /getrank.
+    default: op
