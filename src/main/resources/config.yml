@@ -1,0 +1,62 @@
+#Spawn
+spawn-coordinates:
+  x: -497.5
+  y: 119.0
+  z: 8.5
+  yaw: 180.0
+  pitch: 0.0
+teleport-to-spawn-on-join: true
+default-gamemode: survival
+max-players: 12
+join-items:
+  item1:
+    material: "COMPASS"
+    name: "&a&lJouer &r&7(Appuyez)"
+    lore:
+      - "&7Choisissez un mini-jeu en un clic."
+    slot: 0
+    left_click_command: "gameselection"
+    right_click_command: "gameselection"
+  item2:
+    material: "PLAYER_HEAD"
+    name: "&bProfil &7(Appuyez)"
+    lore:
+      - "&7Explorez votre profil joueur pour personnaliser vos particules, ajuster vos options de jeu, consulter vos statistiques, gérer votre liste d'amis, et bien plus encore !"
+    slot: 4
+    left_click_command: "profile"
+    right_click_command: "profile"
+  item3:
+    material: "GOLD_INGOT"
+    name: "&eBoutique &7(Appuyez)"
+    lore:
+      - "&7Obtenez un grade exclusif, débloquez des particules uniques et profitez d'atouts dans le jeu de votre choix."
+    slot: 3
+    left_click_command: "shop"
+    right_click_command: "shop"
+  item4:
+    material: "GOLDEN_APPLE"
+    name: "&eMasquer les joueurs &7(Appuyez)"
+    lore:
+      - "&7Ouvrez le menu de jeux"
+    slot: 5
+    left_click_command: "shop"
+    right_click_command: "shop"
+  item5:
+    material: "CLOCK"
+    name: "&eOptions &7(Appuyez)"
+    lore:
+      - "&7Ouvrez le menu de jeux"
+    slot: 8
+    left_click_command: "options"
+    right_click_command: "options"
+bossBar:
+  message1:
+    text: "&bVous jouez sur &b&lCiaraCube.fr"
+    barColor: AQUA
+    fillAmount: 0.5
+    duration: 500
+  message2:
+    text: "&eObtenez un grade, des particules, et atouts &6&l/BOUTIQUE"
+    barColor: RED
+    fillAmount: 0.8
+    duration: 500

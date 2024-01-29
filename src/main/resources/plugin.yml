@@ -1,0 +1,32 @@
+name: CiaraHub
+version: '${project.version}'
+main: com.ciarahub.CiaraHub
+api-version: '1.19'
+commands:
+  config:
+  heal:
+    description: Restaure la vie du joueur.
+    usage: /heal
+  hello:
+    description:
+      usage:
+  console:
+  help:
+    description: Obtenir de l'aide en jeu.
+    usage: /help
+  spawn:
+    description: Retourne le joueur au point de spawn.
+    usage: /spawn
+  pls:
+  t:
+  pluginlist:
+  profile:
+  clara:
+  gameselection:
+  gui:
+  helptest:
+  image:
+    description: Envoie une image dans le tchat
+    usage: /image <URL de l'image>
+    permission: votreplugin.image
+
