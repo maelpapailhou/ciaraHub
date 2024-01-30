@@ -1,28 +1,31 @@
 game:
-  title: "&aSélectionner un jeu"
-  size: 27 # 3 lignes (9 slots par ligne)
+  title: "Sélectionner un jeu"
+  size: 6 # 3 lignes (9 slots par ligne)
+  openitem: "COMPASS"
   items:
-    - slot: 4
-      material: COMPASS
-      name: "&bSélectionnez un jeu"
+    - item1:
+      x: 4
+      y: 2
+      material: "COMPASS"
+      name: "&aJouer"
       lore:
-        - "&7Choisissez votre aventure"
-    - slot: 10
-      material: DIAMOND_SWORD
-      name: "&bJeu d'Aventure"
+        - "&7Cliquez pour rejoindre un jeu"
+    - item2:
+      x: 4
+      y: 5
+      material: "NETHER_STAR"
+      name: "Autre"
       lore:
-        - "&7Combattez et explorez"
+        - "&7Cliquez pour rejoindre un jeu"
 boutique:
-  title: "&eBoutique"
-  size: 27 # 3 lignes (9 slots par ligne)
+  title: "Boutique"
+  size: 6 # 3 lignes (9 slots par ligne)
+  openitem: "GOLD_INGOT"
   items:
-    - slot: 4
-      material: COMPASS
-      name: "&bSélectionnez un jeu"
+    - item1:
+      x: 4
+      y: 3
+      material: "COMPASS"
+      name: "&aJouer"
       lore:
-        - "&7Choisissez votre aventure"
-    - slot: 10
-      material: DIAMOND_SWORD
-      name: "&bJeu d'Aventure"
-      lore:
-        - "&7Combattez et explorez"
+        - "&7Cliquez pour rejoindre un jeu"

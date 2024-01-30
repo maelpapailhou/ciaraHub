@@ -33,7 +33,7 @@ public class ManagerGUI implements Listener {
             }
         });
         Bukkit.getServer().getPluginManager().registerEvents(this, plugin);
-        Bukkit.getLogger().info("[CiaraHub] GameGUI initialisé.");
+        Bukkit.getLogger().info("[CiaraHub] ManagerGUI initialisé.");
     }
 
     private ItemStack createItem(String material, String name, List<String> lore) {
@@ -60,7 +60,9 @@ public class ManagerGUI implements Listener {
 
             List<Map<?, ?>> itemsList = config.getMapList(guiName + ".items");
             for (Map<?, ?> itemData : itemsList) {
-                int slot = (Integer) itemData.get("slot");
+                int x = (Integer) itemData.get("x");
+                int y = (Integer) itemData.get("y");
+                int slot = (y - 1) * 9 + (x - 1);
                 String material = (String) itemData.get("material");
                 String name = (String) itemData.get("name");
                 List<String> lore = (List<String>) itemData.get("lore");
