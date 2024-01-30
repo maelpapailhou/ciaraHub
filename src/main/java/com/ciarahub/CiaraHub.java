@@ -3,8 +3,10 @@ package com.ciarahub;
 import com.ciarahub.commands.debugCommands.GetRankCommand;
 import com.ciarahub.commands.SpawnCommand;
 import com.ciarahub.commands.TimeCommand;
+import com.ciarahub.commands.debugCommands.TestGuiCommand;
 import com.ciarahub.databases.ConnectDatabase;
 import com.ciarahub.databases.RankDatabase;
+import com.ciarahub.guis.GameGUI;
 import com.ciarahub.listeners.*;
 import com.ciarahub.managers.BossBarManager;
 import com.ciarahub.managers.ScoreBoardManager;
@@ -12,6 +14,8 @@ import com.ciarahub.managers.TimeManager;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.World;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -26,45 +30,63 @@ public class CiaraHub extends JavaPlugin implements Listener {
     private ScoreBoardManager scoreBoardManager;
     private ConnectDatabase connectDatabase;
     private RankDatabase rankDatabase;
+    private File guiFile;
+    private FileConfiguration guiConfig;
 
-    public CiaraHub() {
-    }
-
+    @Override
     public void onEnable() {
         instance = this;
-        System.out.println("[CiaraHub] Activation...");
+        System.out.println("[CiaraHub] Activation du plugin...");
 
-        // Sauvegarde de la configuration par défaut
         this.saveDefaultConfig();
+        initGuiConfig();
 
-        // Connexion à la base de données
         connectDatabase = new ConnectDatabase();
         if (connectDatabase.isConnected()) {
             System.out.println("[CiaraHub] Connecté à la base de données.");
-            // Obtenez le chemin du fichier de configuration des rangs
             String ranksFilePath = this.getDataFolder().getAbsolutePath() + File.separator + "ranks.yml";
             rankDatabase = new RankDatabase(connectDatabase.getConnection(), ranksFilePath);
-
-            // Utilisez la connexion de connectDatabase ici
             this.getCommand("getrank").setExecutor(new GetRankCommand(connectDatabase.getConnection()));
         } else {
             System.out.println("[CiaraHub] Impossible de se connecter à la base de données.");
         }
-        // Initialisation des commandes et listeners
+
         this.getCommand("spawn").setExecutor(new SpawnCommand(this));
         this.getCommand("t").setExecutor(new TimeCommand());
+        this.getCommand("testgui").setExecutor(new TestGuiCommand(this));
+
         registerListeners();
 
-        // Initialisation du BossBarManager et du ScoreBoardManager
-        this.bossBarManager = new BossBarManager(this);
-        this.scoreBoardManager = new ScoreBoardManager(rankDatabase);
+        bossBarManager = new BossBarManager(this);
+        scoreBoardManager = new ScoreBoardManager(rankDatabase);
 
-        // Réglages supplémentaires
         Bukkit.getServer().setDefaultGameMode(GameMode.SURVIVAL);
         TimeManager timeManager = new TimeManager(this, (World)this.getServer().getWorlds().get(0));
         timeManager.start();
         this.getServer().getPluginManager().registerEvents(this, this);
-        System.out.println("[CiaraHub] Activé avec succès !");
+        System.out.println("[CiaraHub] Plugin activé avec succès !");
+    }
+
+    private void initGuiConfig() {
+        guiFile = new File(getDataFolder(), "gui.yml");
+        if (!guiFile.exists()) {
+            System.out.println("[CiaraHub] Fichier gui.yml introuvable, création en cours...");
+            saveResource("gui.yml", false);
+        }
+        guiConfig = YamlConfiguration.loadConfiguration(guiFile);
+        System.out.println("[CiaraHub] Configuration gui.yml chargée.");
+    }
+
+    public FileConfiguration getGuiConfig() {
+        return this.guiConfig;
+    }
+
+    public void reloadGuiConfig() {
+        if (guiFile == null) {
+            guiFile = new File(getDataFolder(), "gui.yml");
+        }
+        guiConfig = YamlConfiguration.loadConfiguration(guiFile);
+        System.out.println("[CiaraHub] Configuration gui.yml rechargée.");
     }
 
     private void registerListeners() {
@@ -78,6 +100,7 @@ public class CiaraHub extends JavaPlugin implements Listener {
         this.registerEvent(new ItemSpawnListener(this));
         this.registerEvent(new InventoryProtectionListener());
         this.registerEvent(new ItemJoinListener(this));
+
     }
 
     @EventHandler
@@ -95,12 +118,13 @@ public class CiaraHub extends JavaPlugin implements Listener {
         }
     }
 
+    @Override
     public void onDisable() {
         if (connectDatabase != null && connectDatabase.isConnected()) {
             connectDatabase.disconnectFromDatabase();
             System.out.println("[CiaraHub] Déconnecté de la base de données.");
         }
-        System.out.println("[CiaraHub] Désactivation...");
+        System.out.println("[CiaraHub] Désactivation du plugin...");
     }
 
     public static CiaraHub getInstance() {

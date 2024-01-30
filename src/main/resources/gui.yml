@@ -1,0 +1,16 @@
+gui:
+  title: "&aSélectionner un jeu"
+  size: 27 # 3 lignes (9 slots par ligne)
+  items:
+    - slot: 4
+      material: COMPASS
+      name: "&bSélectionnez un jeu"
+      lore:
+        - "&7Choisissez votre aventure"
+    - slot: 10
+      material: DIAMOND_SWORD
+      name: "&bJeu d'Aventure"
+      lore:
+        - "&7Combattez et explorez"
+    # Ajoutez plus d'items ici...
+  git commit -m"30I24 2053 Add GameGUI, gui.yml avec item size name dans fichier, ouvre avec item défini dans classe"

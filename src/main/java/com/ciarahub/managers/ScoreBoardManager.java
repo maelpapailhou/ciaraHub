@@ -40,6 +40,7 @@ public class ScoreBoardManager {
                 "&6» &b&lLobby &r&b#1",
                 "&5  &7Connectés&f: &a3 701",
                 "&5  &7Amis&f: &a3"
+
         };
 
         for (int i = 0; i < lines.length; i++) {
