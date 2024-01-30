@@ -1,7 +1,7 @@
 package com.ciarahub.commands.debugCommands;
 
 import com.ciarahub.CiaraHub;
-import com.ciarahub.guis.GameGUI;
+import com.ciarahub.guis.ManagerGUI;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -23,9 +23,19 @@ public class TestGuiCommand implements CommandExecutor {
         }
 
         Player player = (Player) sender;
-        GameGUI gameGUI = new GameGUI(plugin);
-        gameGUI.openInventory(player);
+        if (args.length == 0) {
+            player.sendMessage("Veuillez spécifier un GUI à ouvrir.");
+            return true;
+        }
 
+        String guiName = args[0].toLowerCase();
+        if (!plugin.getGuiConfig().contains(guiName)) {
+            player.sendMessage("Le GUI spécifié n'existe pas.");
+            return true;
+        }
+
+        ManagerGUI gameGUI = new ManagerGUI(plugin);
+        gameGUI.openInventory(player, guiName);
         return true;
     }
 }

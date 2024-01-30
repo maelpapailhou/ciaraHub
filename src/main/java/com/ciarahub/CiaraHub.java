@@ -6,7 +6,6 @@ import com.ciarahub.commands.TimeCommand;
 import com.ciarahub.commands.debugCommands.TestGuiCommand;
 import com.ciarahub.databases.ConnectDatabase;
 import com.ciarahub.databases.RankDatabase;
-import com.ciarahub.guis.GameGUI;
 import com.ciarahub.listeners.*;
 import com.ciarahub.managers.BossBarManager;
 import com.ciarahub.managers.ScoreBoardManager;
