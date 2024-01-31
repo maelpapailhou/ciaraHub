@@ -23,7 +23,7 @@ public class ManagerGUI implements Listener {
     private final FileConfiguration config;
     private final Map<String, Integer> guiSizes;
     private final Map<String, String> guiTitles;
-    private final Map<String, List<ItemStack>> guiItems;
+    private final Map<String, Map<Integer, ItemStack>> guiItems;
 
     public ManagerGUI(CiaraHub plugin) {
         this.plugin = plugin;
@@ -42,10 +42,22 @@ public class ManagerGUI implements Listener {
             guiTitles.put(guiName, title);
             guiSizes.put(guiName, size);
 
-            List<ItemStack> items = new ArrayList<>();
+            Map<Integer, ItemStack> items = new HashMap<>();
             List<Map<?, ?>> itemsConfig = config.getMapList(guiName + ".items");
             for (Map<?, ?> itemData : itemsConfig) {
-                items.add(createItemFromConfig(itemData));
+                ItemStack item = createItemFromConfig(itemData);
+
+                int x = 0;
+                int y = 0;
+                if (itemData.get("x") instanceof Number) {
+                    x = ((Number) itemData.get("x")).intValue();
+                }
+                if (itemData.get("y") instanceof Number) {
+                    y = ((Number) itemData.get("y")).intValue();
+                }
+
+                int slot = y * 9 + x;
+                items.put(slot, item);
             }
             guiItems.put(guiName, items);
         }
@@ -123,9 +135,9 @@ public class ManagerGUI implements Listener {
         int size = guiSizes.getOrDefault(guiName, 27);
         Inventory inventory = Bukkit.createInventory(null, size, title);
 
-        List<ItemStack> items = guiItems.getOrDefault(guiName, new ArrayList<>());
-        for (ItemStack item : items) {
-            inventory.addItem(item);
+        Map<Integer, ItemStack> items = guiItems.getOrDefault(guiName, new HashMap<>());
+        for (Map.Entry<Integer, ItemStack> entry : items.entrySet()) {
+            inventory.setItem(entry.getKey(), entry.getValue());
         }
 
         player.openInventory(inventory);
