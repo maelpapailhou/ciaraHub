@@ -10,6 +10,8 @@ game:
       name: "&aJouer"
       lore:
         - "&7Cliquez pour rejoindre un jeu"
+      actions:
+        - 'open:boutique'
     - item2:
       x: 4
       y: 5
@@ -21,6 +23,7 @@ boutique:
   title: "Boutique"
   size: 6 # 3 lignes (9 slots par ligne)
   openitem: "GOLD_INGOT"
+  command: "help"
   items:
     - item1:
       x: 4

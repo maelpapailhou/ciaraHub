@@ -8,87 +8,126 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class ManagerGUI implements Listener {
+    private final CiaraHub plugin;
     private final FileConfiguration config;
-    private final Map<Material, String> openItemToGuiMap;
+    private final Map<String, Integer> guiSizes;
+    private final Map<String, String> guiTitles;
+    private final Map<String, List<ItemStack>> guiItems;
 
     public ManagerGUI(CiaraHub plugin) {
+        this.plugin = plugin;
         this.config = plugin.getGuiConfig();
-        openItemToGuiMap = new HashMap<>();
-        config.getConfigurationSection("").getKeys(false).forEach(guiName -> {
-            String openItem = config.getString(guiName + ".openitem");
-            if (openItem != null) {
-                openItemToGuiMap.put(Material.getMaterial(openItem.toUpperCase()), guiName);
-            }
-        });
+        this.guiSizes = new HashMap<>();
+        this.guiTitles = new HashMap<>();
+        this.guiItems = new HashMap<>();
+        initializeConfigData();
         Bukkit.getServer().getPluginManager().registerEvents(this, plugin);
-        Bukkit.getLogger().info("[CiaraHub] ManagerGUI initialisé.");
     }
 
-    private ItemStack createItem(String material, String name, List<String> lore) {
-        try {
-            Material mat = Material.valueOf(material.toUpperCase());
-            ItemStack item = new ItemStack(mat);
-            ItemMeta meta = item.getItemMeta();
+    private void initializeConfigData() {
+        for (String guiName : config.getKeys(false)) {
+            String title = config.getString(guiName + ".title", "Default Title");
+            int size = config.getInt(guiName + ".size", 3) * 9;
+            guiTitles.put(guiName, title);
+            guiSizes.put(guiName, size);
+
+            List<ItemStack> items = new ArrayList<>();
+            List<Map<?, ?>> itemsConfig = config.getMapList(guiName + ".items");
+            for (Map<?, ?> itemData : itemsConfig) {
+                items.add(createItemFromConfig(itemData));
+            }
+            guiItems.put(guiName, items);
+        }
+    }
+
+    private ItemStack createItemFromConfig(Map<?, ?> itemData) {
+        String materialName = "STONE";
+        if (itemData.containsKey("material") && itemData.get("material") instanceof String) {
+            materialName = (String) itemData.get("material");
+        }
+        Material material = Material.matchMaterial(materialName);
+        if (material == null) {
+            material = Material.STONE;
+        }
+
+        String name = "";
+        if (itemData.containsKey("name") && itemData.get("name") instanceof String) {
+            name = (String) itemData.get("name");
+        }
+
+        List<String> lore = new ArrayList<>();
+        if (itemData.get("lore") instanceof List<?>) {
+            for (Object line : (List<?>) itemData.get("lore")) {
+                if (line instanceof String) {
+                    lore.add((String) line);
+                }
+            }
+        }
+
+        return createItem(material, name, lore);
+    }
+
+    private ItemStack createItem(Material material, String name, List<String> lore) {
+        ItemStack item = new ItemStack(material);
+        ItemMeta meta = item.getItemMeta();
+        if (meta != null) {
             meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', name));
-            meta.setLore(lore.stream().map(line -> ChatColor.translateAlternateColorCodes('&', line)).collect(Collectors.toList()));
+            List<String> coloredLore = new ArrayList<>();
+            for (String line : lore) {
+                coloredLore.add(ChatColor.translateAlternateColorCodes('&', line));
+            }
+            meta.setLore(coloredLore);
             item.setItemMeta(meta);
-            return item;
-        } catch (Exception e) {
-            Bukkit.getLogger().severe("[CiaraHub] Erreur lors de la création de l'item : " + e.getMessage());
-            return null;
+        }
+        return item;
+    }
+
+    @EventHandler
+    public void onInventoryClick(InventoryClickEvent event) {
+        if (!(event.getWhoClicked() instanceof Player)) return;
+
+        Player player = (Player) event.getWhoClicked();
+        Inventory inventory = event.getClickedInventory();
+        if (inventory == null || inventory.getHolder() != null) return;
+
+        String title = "";
+        if (!inventory.getViewers().isEmpty()) {
+            title = inventory.getViewers().get(0).getOpenInventory().getTitle();
+        }
+
+        for (Map.Entry<String, String> entry : guiTitles.entrySet()) {
+            if (entry.getValue().equals(title)) {
+                event.setCancelled(true);
+                ItemStack clickedItem = event.getCurrentItem();
+                if (clickedItem != null && clickedItem.hasItemMeta()) {
+                    // Handle item click actions here
+                }
+                break;
+            }
         }
     }
 
     public void openInventory(Player player, String guiName) {
-        Bukkit.getLogger().info("[CiaraHub] Tentative d'ouverture de l'inventaire " + guiName + " pour " + player.getName());
-        try {
-            String title = ChatColor.translateAlternateColorCodes('&', config.getString(guiName + ".title"));
-            int size = config.getInt(guiName + ".size") * 9;
-            Inventory inventory = Bukkit.createInventory(null, size, title);
+        String title = guiTitles.getOrDefault(guiName, "Default Inventory");
+        int size = guiSizes.getOrDefault(guiName, 27);
+        Inventory inventory = Bukkit.createInventory(null, size, title);
 
-            List<Map<?, ?>> itemsList = config.getMapList(guiName + ".items");
-            for (Map<?, ?> itemData : itemsList) {
-                int x = (Integer) itemData.get("x");
-                int y = (Integer) itemData.get("y");
-                int slot = (y - 1) * 9 + (x - 1);
-                String material = (String) itemData.get("material");
-                String name = (String) itemData.get("name");
-                List<String> lore = (List<String>) itemData.get("lore");
-                ItemStack item = createItem(material, name, lore);
-                if (item != null) {
-                    inventory.setItem(slot, item);
-                }
-            }
-
-            player.openInventory(inventory);
-            Bukkit.getLogger().info("[CiaraHub] Inventaire " + guiName + " ouvert pour " + player.getName());
-        } catch (Exception e) {
-            Bukkit.getLogger().severe("[CiaraHub] Erreur lors de l'ouverture de l'inventaire " + guiName + " : " + e.getMessage());
+        List<ItemStack> items = guiItems.getOrDefault(guiName, new ArrayList<>());
+        for (ItemStack item : items) {
+            inventory.addItem(item);
         }
-    }
 
-    @EventHandler
-    public void onPlayerInteract(PlayerInteractEvent event) {
-        Player player = event.getPlayer();
-        if ((event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK ||
-                event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK) &&
-                event.getItem() != null && openItemToGuiMap.containsKey(event.getItem().getType())) {
-            String guiName = openItemToGuiMap.get(event.getItem().getType());
-            Bukkit.getLogger().info("[CiaraHub] Joueur " + player.getName() + " a cliqué avec " + event.getItem().getType() + " pour ouvrir " + guiName + ".");
-            openInventory(player, guiName);
-            event.setCancelled(true);
-        }
+        player.openInventory(inventory);
     }
 }

@@ -6,6 +6,8 @@ import com.ciarahub.commands.TimeCommand;
 import com.ciarahub.commands.debugCommands.TestGuiCommand;
 import com.ciarahub.databases.ConnectDatabase;
 import com.ciarahub.databases.RankDatabase;
+import com.ciarahub.guis.ActionsGUI;
+import com.ciarahub.guis.OpenItemGUI;
 import com.ciarahub.listeners.*;
 import com.ciarahub.managers.BossBarManager;
 import com.ciarahub.managers.ScoreBoardManager;
@@ -99,6 +101,7 @@ public class CiaraHub extends JavaPlugin implements Listener {
         this.registerEvent(new ItemSpawnListener(this));
         this.registerEvent(new InventoryProtectionListener());
         this.registerEvent(new ItemJoinListener(this));
+        this.registerEvent(new OpenItemGUI(this));
 
     }
 
